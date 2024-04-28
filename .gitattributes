@@ -1,0 +1,4 @@
+vendor/tesseract/libs/Debug/libcrypto.lib filter=lfs diff=lfs merge=lfs -text
+vendor/tesseract/libs/Debug/tesseract53d.lib filter=lfs diff=lfs merge=lfs -text
+vendor/tesseract/libs/Release/tesseract53.lib filter=lfs diff=lfs merge=lfs -text
+vendor/tesseract/libs/Release/libcrypto.lib filter=lfs diff=lfs merge=lfs -text
