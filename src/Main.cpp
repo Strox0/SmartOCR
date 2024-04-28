@@ -1,5 +1,5 @@
-#include <tesseract/baseapi.h>
-#include <leptonica/allheaders.h>
+#include "ConfigParser.h"
+#include <iostream>
 
 #pragma comment(lib, "archive.lib")
 #pragma comment(lib, "libcrypto.lib")
@@ -8,27 +8,27 @@
 
 int main()
 {
-    char* outText;
+	Parser parser("./config.titr");
 
-    tesseract::TessBaseAPI* api = new tesseract::TessBaseAPI();
-    // Initialize tesseract-ocr with English, without specifying tessdata path
-    if (api->Init(NULL, "eng")) {
-        fprintf(stderr, "Could not initialize tesseract.\n");
-        exit(1);
-    }
+	if (parser.Error())
+	{
+		std::cout << parser.FormatError(parser.Error()) << std::endl;
+		return 1;
+	}
 
-    // Open input image with leptonica library
-    Pix* image = pixRead("test.jpg");
-    api->SetImage(image);
-    // Get OCR result
-    outText = api->GetUTF8Text();
-    printf("OCR output:\n%s", outText);
+	parser.Parse();
 
-    // Destroy used object and release memory
-    api->End();
-    delete api;
-    delete[] outText;
-    pixDestroy(&image);
+	const std::unordered_map<std::string, _STM_Info>& config = parser.GetResult();
 
-    return 0;
+	for (const auto& [regex_stm,stm_info] : config)
+	{
+		std::cout << "Regex Statement: " << regex_stm << std::endl;
+
+		for (size_t i = 0; i < stm_info.names.size(); i++)
+		{
+			std::cout << "\tName: " << stm_info.names[i] << "\n\tGroup: " << stm_info.regex_groups[i] << std::endl;
+		}
+	}
+
+	return 0;
 }
