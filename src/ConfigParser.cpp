@@ -1,6 +1,7 @@
 #include "ConfigParser.h"
 #include <filesystem>
 #include <algorithm>
+#include <ranges>
 
 Parser::Parser(const char* file_path)
 {
@@ -31,6 +32,17 @@ bool isnotnum(char c)
 	return (c <= '9' && c >= '0') ? false : true;
 }
 
+bool Parser::DuplicateName(const std::string& name)
+{
+	for (const auto& i : m_config)
+	{
+		if (i.name == name)
+			return true;
+	}
+
+	return false;
+}
+
 void Parser::Parse()
 {
 	std::string line;
@@ -59,27 +71,9 @@ void Parser::Parse()
 		if (groupname.empty() || regex_group.empty() || regex_string.empty())
 			continue;
 
-		if (m_config.contains(groupname))
+		if (DuplicateName(groupname))
 			continue;
 
-		m_config[groupname].reg_group = std::stoul(regex_group);
-		m_config[groupname].regex_stm = regex_string;
-	}
-}
-
-const char* Parser::FormatError(short error_code) const
-{
-	switch (error_code)
-	{
-		case ERROR_SUCCESS:
-			return "Success";
-		case ERROR_COULD_NOT_OPEN_FILE:
-			return "Could not open file";
-		case ERROR_INVALID_FILE_FORMAT:
-			return "Invalid file format";
-		case ERROR_FILE_DOES_NOT_EXIST:
-			return "File does not exist";
-	default:
-		return "Unknown error";
+		m_config.push_back(_STM_info( groupname, std::stoi(regex_group), regex_string ));
 	}
 }

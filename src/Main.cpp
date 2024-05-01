@@ -1,4 +1,8 @@
+#include "ErrorCodes.h"
+
 #include "ConfigParser.h"
+
+#include "OCR.h"
 #include <iostream>
 
 #pragma comment(lib, "archive.lib")
@@ -6,26 +10,57 @@
 #pragma comment(lib, "libsharpyuv.lib")
 #pragma comment(lib, "Crypt32.lib")
 
-int main()
+int main(int argc,char** argv)
 {
-	Parser parser("./config.titr");
-
-	if (parser.Error())
+	if (argc < 2)
 	{
-		std::cout << parser.FormatError(parser.Error()) << std::endl;
+		std::cout << "Usage: <program> <path to image or directory>" << std::endl;
 		return 1;
 	}
 
-	parser.Parse();
+	Parser parser("./config.titr");
 
-	const ConfigRes& config = parser.GetResult();
+	bool use_parser = false;
 
-	for (auto& [name,stm_info] : config)
+	if (parser.Error())
 	{
-		std::cout << "Column name : " << name << std::endl;
-		std::cout << "\tRegex expression : " << stm_info.regex_stm << std::endl;
-		std::cout << "\tGroup of the data : " << stm_info.reg_group << std::endl;
+		if (parser.Error() == ERROR_FILE_DOES_NOT_EXIST)
+		{
+			std::cout << "No config file found (./config.titr)" << std::endl;
+			use_parser = false;
+		}
+		else
+		{
+			std::cout << FormatError(parser.Error()) << std::endl;
+			return 1;
+		}
 	}
+	else
+		use_parser = true;
+
+	OCR ocr(argv[1]);
+
+	if (ocr.GetError())
+	{
+		std::cout << FormatError(ocr.GetError()) << std::endl;
+		return 1;
+	}
+
+	if (use_parser)
+	{
+		parser.Parse();
+		ocr.SetConfig(parser.GetResult());
+	}
+
+	ocr.Process();
+
+	if (ocr.GetError())
+	{
+		std::cout << FormatError(ocr.GetError()) << std::endl;
+		return 1;
+	}
+	else
+		std::cout << "Done!";
 
 	return 0;
 }
