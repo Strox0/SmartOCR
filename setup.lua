@@ -1,6 +1,6 @@
 outputdir = "%{cfg.buildcfg}-%{cfg.architecture}"
 
-workspace "Tess-ITR"
+workspace "SmartOCR"
 	architecture "x64"
 	configurations {"Debug","Release"}
 
@@ -19,7 +19,7 @@ workspace "Tess-ITR"
       optimize "On"
       symbols "Off"
 
-project "Tess-ITR"
+project "SmartOCR"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++20"

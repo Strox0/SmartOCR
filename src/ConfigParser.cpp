@@ -59,9 +59,11 @@ void Parser::Parse()
 		if (groupname.empty() || regex_group.empty() || regex_string.empty())
 			continue;
 
-		config[regex_string];
-		config.at(regex_string).regex_groups.push_back(regex_group);
-		config.at(regex_string).names.push_back(groupname);
+		if (m_config.contains(groupname))
+			continue;
+
+		m_config[groupname].reg_group = std::stoul(regex_group);
+		m_config[groupname].regex_stm = regex_string;
 	}
 }
 
@@ -81,4 +83,3 @@ const char* Parser::FormatError(short error_code) const
 		return "Unknown error";
 	}
 }
-

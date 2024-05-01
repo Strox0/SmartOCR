@@ -18,16 +18,13 @@ int main()
 
 	parser.Parse();
 
-	const std::unordered_map<std::string, _STM_Info>& config = parser.GetResult();
+	const ConfigRes& config = parser.GetResult();
 
-	for (const auto& [regex_stm,stm_info] : config)
+	for (auto& [name,stm_info] : config)
 	{
-		std::cout << "Regex Statement: " << regex_stm << std::endl;
-
-		for (size_t i = 0; i < stm_info.names.size(); i++)
-		{
-			std::cout << "\tName: " << stm_info.names[i] << "\n\tGroup: " << stm_info.regex_groups[i] << std::endl;
-		}
+		std::cout << "Column name : " << name << std::endl;
+		std::cout << "\tRegex expression : " << stm_info.regex_stm << std::endl;
+		std::cout << "\tGroup of the data : " << stm_info.reg_group << std::endl;
 	}
 
 	return 0;

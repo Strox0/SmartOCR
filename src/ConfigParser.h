@@ -10,11 +10,14 @@
 #define ERROR_INVALID_FILE_FORMAT 2
 #define ERROR_FILE_DOES_NOT_EXIST 3
 
-struct _STM_Info
+
+struct _STM_info
 {
-	std::vector<std::string> regex_groups;
-	std::vector<std::string> names;
+	uint32_t reg_group;
+	std::string regex_stm;
 };
+
+typedef std::unordered_map<std::string, _STM_info> ConfigRes;
 
 class Parser
 {
@@ -26,12 +29,12 @@ public:
 	short Error() const { return m_error_code; }
 	const char* FormatError(short error_code) const;
 
-	const std::unordered_map<std::string, _STM_Info>& GetResult() const { return config; }
+	const ConfigRes& GetResult() const { return m_config; }
 
 private:
 	std::fstream file;
 
-	std::unordered_map<std::string, _STM_Info> config;
+	std::unordered_map<std::string, _STM_info> m_config;
 
 	short m_error_code = 0;
 };
